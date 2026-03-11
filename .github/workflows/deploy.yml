@@ -10,7 +10,7 @@ jobs:
   deploy-api:
     name: Deploy API → Render
     runs-on: ubuntu-latest
-    needs: check
+    environment: main - dayframe-api
     steps:
       - name: Trigger Render deploy hook
         run: |
@@ -21,7 +21,7 @@ jobs:
   deploy-mobile:
     name: Build mobile → EAS (preview)
     runs-on: ubuntu-latest
-    needs: check
+    environment: main - dayframe-api
     defaults:
       run:
         working-directory: apps/mobile
