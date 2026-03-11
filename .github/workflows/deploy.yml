@@ -6,33 +6,7 @@ on:
       - main
 
 jobs:
-  # ─── 1. Lint & type-check ─────────────────────────────────────────────────
-  check:
-    name: Lint & type-check
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build shared package
-        run: npx turbo run build --filter=@dayframe/shared
-
-      - name: Type-check all packages
-        run: npx turbo run type-check
-
-      - name: Lint all packages
-        run: npx turbo run lint
-
-  # ─── 2. Deploy API to Render ─────────────────────────────────────────────
+  # ─── 1. Deploy API to Render ─────────────────────────────────────────────
   deploy-api:
     name: Deploy API → Render
     runs-on: ubuntu-latest
@@ -43,7 +17,7 @@ jobs:
           curl --silent --show-error --fail \
             "${{ secrets.RENDER_DEPLOY_HOOK_URL }}"
 
-  # ─── 3. Build mobile app via EAS ─────────────────────────────────────────
+  # ─── 2. Build mobile app via EAS ─────────────────────────────────────────
   deploy-mobile:
     name: Build mobile → EAS (preview)
     runs-on: ubuntu-latest

@@ -9,9 +9,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { SyncModule } from './sync/sync.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-
-// .env is loaded early in main.ts via dotenv before NestJS bootstraps,
-// so ConfigModule just reads from process.env directly.
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -32,6 +30,7 @@ import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
     SyncModule,
     NotificationsModule,
   ],
+  controllers: [HealthController],
   providers: [
     // Apply JwtAuthGuard globally; use @Public() to opt out
     {
