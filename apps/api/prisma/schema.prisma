@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../../../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+enum TaskStatus {
+  pending
+  in_progress
+  completed
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  passwordHash String     @map("password_hash")
+  pushToken    String?    @map("push_token")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  tasks      Task[]
+  categories Category[]
+
+  @@map("users")
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  name      String
+  color     String   @default("#6366F1")
+  icon      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  isDeleted Boolean  @default(false) @map("is_deleted")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tasks Task[]
+
+  @@index([userId])
+  @@map("categories")
+}
+
+model Task {
+  id              String       @id @default(uuid())
+  userId          String       @map("user_id")
+  title           String
+  description     String?
+  status          TaskStatus   @default(pending)
+  priority        TaskPriority @default(medium)
+  scheduledDate   String?      @map("scheduled_date")
+  dueDate         DateTime?    @map("due_date")
+  categoryId      String?      @map("category_id")
+  recurrenceRule  String?      @map("recurrence_rule")
+  reminderFreqMin Int          @default(60) @map("reminder_freq_min")
+  reminderStart   String       @default("08:00") @map("reminder_start")
+  reminderEnd     String       @default("23:00") @map("reminder_end")
+  completedAt     DateTime?    @map("completed_at")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+  isDeleted       Boolean      @default(false) @map("is_deleted")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([scheduledDate])
+  @@index([status])
+  @@index([categoryId])
+  @@map("tasks")
+}
